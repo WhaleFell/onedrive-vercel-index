@@ -31,6 +31,7 @@ const kv = new Redis(process.env.REDIS_URL || '')
 
 // store token in browser session
 
+// 从 Redis 获取访问令牌和刷新令牌，并缓存到浏览器会话中
 export async function getOdAuthTokens(): Promise<{ accessToken: unknown; refreshToken: unknown }> {
   // 尝试从浏览器会话中获取缓存的令牌
   const cachedAccessToken = sessionStorage.getItem('accessToken')
@@ -49,8 +50,8 @@ export async function getOdAuthTokens(): Promise<{ accessToken: unknown; refresh
   const refreshToken = await kv.get(`${siteConfig.kvPrefix}refresh_token`)
 
   // 将获取的令牌缓存到浏览器会话中
-  sessionStorage.setItem('accessToken', accessToken)
-  sessionStorage.setItem('refreshToken', refreshToken)
+  sessionStorage.setItem('accessToken', accessToken || '') // 使用空字符串作为默认值
+  sessionStorage.setItem('refreshToken', refreshToken || '') // 使用空字符串作为默认值
 
   return {
     accessToken,
@@ -76,4 +77,3 @@ export async function storeOdAuthTokens({
   sessionStorage.setItem('accessToken', accessToken)
   sessionStorage.setItem('refreshToken', refreshToken)
 }
-
